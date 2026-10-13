@@ -1,0 +1,46 @@
+															CRIME REPORTING SYSTEM (URSALA)
+
+																	Project Overview
+
+The Crime Reporting System is a secure, monolithic web application designed to bridge the communication gap between citizens and local law enforcement. Built with an emphasis on robust backend security and architectural separation of concerns.
+The system allows citizens to seamlessly file and track incident reports while providing police officers with a protected, authenticated dashboard to investigate and update case statuses.
+Software Engineering Architecture. This application strictly adheres to the Model-View-Controller (MVC) design pattern, further enhanced by a dedicated Service layer to encapsulate business logic.
+
+->Presentation Layer (View): Vanilla HTML, CSS, and JavaScript served directly via Spring Boot's embedded Tomcat server, eliminating CORS overhead and simplifying deployment.
+->Controller Layer: RESTful APIs utilizing ResponseEntity to enforce standard HTTP status codes (e.g., 201 Created, 404 Not Found).
+->Service Layer: Handles core business logic and utilizes Java Optional to safely manage null references and data retrieval.
+->Data Access Layer (Repository/Model): Spring Data JPA interfaces abstracting complex SQL queries, mapped to a dynamically generated H2 in-memory database. Entity timestamps are managed automatically via @PrePersist and @PreUpdate lifecycle callbacks.
+
+>>Technology Stack
+1> Backend: Java 25, Spring Boot (4.1.1)
+2> Database: H2 In-Memory Database, Spring Data JPA / Hibernate
+3> Security: Spring Security 6+
+4> Frontend: HTML5, CSS3, ES6 JavaScript, Fetch API
+
+Security Posture::
+The application implements a defense-in-depth approach, balancing frontend obscurity with strict backend endpoint protection:
+Stage 1: Frontend Gateway (Bot Deflection & Routing)
+The root index.html acts as a zero-UI gateway requiring specific numeric keystrokes to access the hidden sub-systems. This mitigates basic automated bot submissions and unauthorized user routing.
+
+Stage 2: Role-Based Access Control (RBAC)
+Configured via Spring Security's Lambda DSL. Public endpoints (POST /api/reports, GET /api/reports/{id}) are exposed for citizen use. Administrative endpoints (GET /api/reports, PATCH /api/reports/**) are strictly locked behind a POLICE role requirement.
+
+Stage 3: Cryptographic Hashing
+In-memory authentication bypasses deprecated plaintext storage by utilizing BCryptPasswordEncoder to securely hash officer credentials upon application boot.
+
+How to Run the Application::
+1. Booting the Server
+Ensure you have Java 25 installed. Run the application from your IDE or via Maven:
+./mvnw spring-boot:run
+The server will start on http://localhost:8080.
+
+2. Navigating the Gateway
+Open your browser and navigate to http://localhost:8080. You will be presented with a blank gateway screen. Type the following access codes directly on your keyboard to navigate the system:
+   1800-100 -> Routes to the Citizen Submission Form.
+   1800-1800 -> Routes to the Client Tracking Portal (requires a Report ID).
+   32450 -> Routes to the Police Dashboard (Protected by HTTP Basic Auth).
+
+3. Police Authentication
+When viewing the Police Dashboard, the background JavaScript automatically injects the BCrypt-verified credentials to fetch the protected data.
+	Username: officer
+	Password: 32450
